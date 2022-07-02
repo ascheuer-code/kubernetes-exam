@@ -1,0 +1,19 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmqcluster
+spec:
+  image: rabbitmq
+  replicas: 1
+  persistence:
+    storage: 2Gi
+  service:
+    type: LoadBalancer
+  resources:
+    requests:
+      cpu: 800m
+      memory: 300Mi
+    limits:
+      cpu: 1000m
+      memory: 800Mi
+  
