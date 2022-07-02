@@ -137,3 +137,4 @@ kubectl logs --follow perf-test
 
 # done for today at https://www.rabbitmq.com/kubernetes/operator/quickstart-operator.html 
 # Next Steps could be interresting
+
