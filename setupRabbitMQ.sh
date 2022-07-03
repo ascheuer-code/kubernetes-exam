@@ -1,14 +1,62 @@
 #!/bin/bash
 
-# FROM https://www.rabbitmq.com/kubernetes/operator/install-operator.html
+# FROM https://www.rabbitmq.com/kubernetes/operator/quickstart-operator.html
 
-## Installing RabbitMQ Cluster Operator in a Kubernetes Cluster ##
+## RabbitMQ Cluster Kubernetes Operator Quickstart ##
+
+# skip to creating RabbitMQ Instance 
+
 
 # The Operator requires
 # Kubernetes 1.19 or above
 # RabbitMQ DockerHub image 3.8.8+
 
 kubectl apply -f "https://github.com/rabbitmq/cluster-operator/releases/latest/download/cluster-operator.yml"
+
+## Using RabbitMQ Cluster Kubernetes Operator ##
+
+# FROM https://www.rabbitmq.com/kubernetes/operator/using-operator.html
+
+kubectl get customresourcedefinitions.apiextensions.k8s.io
+
+
+# First, create a YAML file to define a RabbitmqCluster resource named rabbitmqcluster.yaml
+
+touch rabbitmqcluster.yaml
+
+echo "apiVersion: v1" >> rabbitmqcluster.yaml
+echo "kind: ServiceAccount" >> rabbitmqcluster.yaml
+echo "metadata:" >> rabbitmqcluster.yaml
+echo "  name: rabbitmqcluster" >> rabbitmqcluster.yaml
+
+kubectl apply -f rabbitmqcluster.yaml
+
+# Then verify that the process was successful by running:
+
+kubectl get all -l app.kubernetes.io/name=rabbitmqcluster
+
+# now add alle specified configurations to the cluster
+
+## COninute at Installing RabbitMQ Cluster Operator in a Kubernetes Cluster
+
+
+# get now your preffered configuration from the page above or use this one
+
+echo "spec:" >> rabbitmqcluster.yaml
+echo "  image: rabbitmq" >> rabbitmqcluster.yaml
+echo "  replicas: 1" >> rabbitmqcluster.yaml
+echo "  persistence:" >> rabbitmqcluster.yaml
+echo "    storage: 2Gi" >> rabbitmqcluster.yaml
+echo "  service:" >> rabbitmqcluster.yaml
+echo "    type: LoadBalancer" >> rabbitmqcluster.yaml
+echo "  resources:" >> rabbitmqcluster.yaml
+echo "    requests:" >> rabbitmqcluster.yaml
+echo "      cpu: 800m" >> rabbitmqcluster.yaml
+echo "      memory: 300Mi" >> rabbitmqcluster.yaml
+echo "    limits:" >> rabbitmqcluster.yaml
+echo "      cpu: 1000m" >> rabbitmqcluster.yaml
+echo "      memory: 800Mi" >> rabbitmqcluster.yaml
+
 
 kubectl krew install rabbitmq #-> doesen work because if no krew installed
 
@@ -40,101 +88,46 @@ docker tag rabbitmqoperator/cluster-operator localhost:5000/rabbitmqoperator
 docker push localhost:5000/rabbitmqoperator
 docker image remove rabbitmqoperator/cluster-operator
 
+# Access The Management UI
 
-
-## Using RabbitMQ Cluster Kubernetes Operator ##
-
-# FROM https://www.rabbitmq.com/kubernetes/operator/using-operator.html
-
-#Before configuring your app to use RabbitMQ Cluster Kubernetes Operator, ensure that RabbitmqCluster Custom Resource is deployed to your Kubernetes cluster and is available.
-
-kubectl get customresourcedefinitions.apiextensions.k8s.io
-
-# Create a RabbitMQ Instance
-
-# First, create a YAML file to define a RabbitmqCluster resource named rabbitmqcluster.yaml
-
-touch rabbitmqcluster.yaml
-
-echo "apiVersion: v1" >> rabbitmqcluster.yaml
-echo "kind: ServiceAccount" >> rabbitmqcluster.yaml
-echo "metadata:" >> rabbitmqcluster.yaml
-echo "  name: rabbitmqcluster" >> rabbitmqcluster.yaml
-
-# Next, apply the definition by running:
-
-kubectl apply -f rabbitmqcluster.yaml
-
-#Then verify that the process was successful by running:
-
-kubectl get all -l app.kubernetes.io/name=rabbitmqcluster
-
-
-# not essential cause of local registry
-
-#Now update the Operator Service Account by running:
-
-#kubectl -n rabbitmq-system patch serviceaccount \
-#rabbitmq-cluster-operator -p '{"imagePullSecrets": [{"name": "rabbitmq-cluster-registry-access"}]}'
-
-# get now your preffered configuration from the page above or use this one
-
-echo "spec:" >> rabbitmqcluster.yaml
-echo "  image: rabbitmq" >> rabbitmqcluster.yaml
-echo "  replicas: 1" >> rabbitmqcluster.yaml
-echo "  persistence:" >> rabbitmqcluster.yaml
-echo "    storage: 2Gi" >> rabbitmqcluster.yaml
-echo "  service:" >> rabbitmqcluster.yaml
-echo "    type: LoadBalancer" >> rabbitmqcluster.yaml
-echo "  resources:" >> rabbitmqcluster.yaml
-echo "    requests:" >> rabbitmqcluster.yaml
-echo "      cpu: 800m" >> rabbitmqcluster.yaml
-echo "      memory: 300Mi" >> rabbitmqcluster.yaml
-echo "    limits:" >> rabbitmqcluster.yaml
-echo "      cpu: 1000m" >> rabbitmqcluster.yaml
-echo "      memory: 800Mi" >> rabbitmqcluster.yaml
-
-## RabbitMQ Cluster Kubernetes Operator Quickstart ##
-
-# FROM https://www.rabbitmq.com/kubernetes/operator/quickstart-operator.html
-
-# Next, let's access the Management UI.
 
 username="$(kubectl get secret rabbitmqcluster-default-user -o jsonpath='{.data.username}' | base64 --decode)"
 echo "username: $username"
 password="$(kubectl get secret rabbitmqcluster-default-user -o jsonpath='{.data.password}' | base64 --decode)"
 echo "password: $password"
 
-kubectl port-forward "service/hello-world" 15672
+kubectl port-forward "service/rabbitmqcluster" 15672
 
-# now open a browser to http://localhost:15672 and use the credentials that are printed
+# Now we can open localhost:15672 in the browser and see the Management UI.
 
 # Using the kubectl rabbitmq plugin, the Management UI can be accessed using:
 
-# dosent work -> kubectl rabbitmq manage rabbitmqcluster
+ kubectl rabbitmq manage rabbitmqcluster
 
+# if the Managament api calls Error 500 then -> DOESENT HELPED AFTER ALL
 
+wget https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+sudo dpkg -i erlang-solutions_1.0_all.deb
+sudo apt-get update
+sudo apt-get install erlang
 
-
-## Connect An Application To The Cluster ##
-
-# The next step would be to connect an application to the RabbitMQ Cluster in order to use its messaging capabilities. The perf-test application is frequently used within the RabbitMQ community for load testing RabbitMQ Clusters.
-
-# FROM https://github.com/rabbitmq/rabbitmq-perf-test
+# Creating perf-test
 
 username="$(kubectl get secret rabbitmqcluster-default-user -o jsonpath='{.data.username}' | base64 --decode)"
 password="$(kubectl get secret rabbitmqcluster-default-user -o jsonpath='{.data.password}' | base64 --decode)"
 service="$(kubectl get service rabbitmqcluster -o jsonpath='{.spec.clusterIP}')"
 kubectl run perf-test --image=pivotalrabbitmq/perf-test -- --uri amqp://$username:$password@$service
 
-# These steps are automated in the kubectl rabbitmq plugin which may simply be run as:
+kubectl rabbitmq perf-test rabbitmqcluster
 
-#  unknown command dunno why ->kubectl rabbitmq perf-test rabbitmqcluster
-
-# We can now view the perf-test logs by running:
+# getlog of perf test
 
 kubectl logs --follow perf-test
 
-# done for today at https://www.rabbitmq.com/kubernetes/operator/quickstart-operator.html 
-# Next Steps could be interresting
+
+
+
+
+
+
 
