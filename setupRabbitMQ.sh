@@ -19,6 +19,10 @@ kubectl apply -f "https://github.com/rabbitmq/cluster-operator/releases/latest/d
 
 kubectl get customresourcedefinitions.apiextensions.k8s.io
 
+docker pull rabbitmq
+docker tag rabbitmq localhost:5000/rabbitmq
+docker push localhost:5000/rabbitmq
+docker image rm rabbitmq
 
 # First, create a YAML file to define a RabbitmqCluster resource named rabbitmqcluster.yaml
 
