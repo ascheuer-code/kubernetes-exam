@@ -10,7 +10,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: my-local-storage
   local:
-    path: /home/irrenhaus/vol1
+    path: /mnt/disk/vol1
   nodeAffinity:
     required:
       nodeSelectorTerms:

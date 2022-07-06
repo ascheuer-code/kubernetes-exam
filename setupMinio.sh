@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# FROM https://computingforgeeks.com/deploy-and-manage-minio-storage-on-kubernetes/
+
 #Step 1 – Create a StorageClass with WaitForFirstConsumer Binding Mode.
 
 touch storageClass.yaml
@@ -32,7 +34,7 @@ echo "  - ReadWriteMany" >> minio-pv.yml
 echo "  persistentVolumeReclaimPolicy: Retain" >> minio-pv.yml
 echo "  storageClassName: my-local-storage" >> minio-pv.yml
 echo "  local:" >> minio-pv.yml
-echo "    path: /home/irrenhaus/vol1" >> minio-pv.yml
+echo "    path: /mnt/disk/vol1" >> minio-pv.yml
 echo "  nodeAffinity:" >> minio-pv.yml
 echo "    required:" >> minio-pv.yml
 echo "      nodeSelectorTerms:" >> minio-pv.yml
@@ -42,8 +44,9 @@ echo "          operator: In" >> minio-pv.yml
 echo "          values:" >> minio-pv.yml
 echo "          - minikube" >> minio-pv.yml
 
-mkdir vol1
-chmod 777 /home/USER/vol1
+DIRNAME="vol1"
+sudo mkdir -p /mnt/disk/$DIRNAME 
+sudo chmod 777 /mnt/disk/$DIRNAME
 
 # create pod 
 
@@ -143,7 +146,81 @@ echo "          periodSeconds: 20">> Minio-deb.yml
 
 #apply config
 
+docker pull minio/minio
+docker tag minio/minio localhost:5000/minio
+docker push localhost:5000/minio
+docker image rm minio/minio
+
 kubectl create -f Minio-Dep.yml
+
+ 
+# Step 5 – Deploy the MinIO Service
+
+touch Minio-svc.yml
+
+echo "apiVersion: v1" >> Minio-svc.yml
+echo "kind: Service" >> Minio-svc.yml
+echo "metadata:" >> Minio-svc.yml
+echo "  # This name uniquely identifies the service" >> Minio-svc.yml
+echo "  name: minio-service" >> Minio-svc.yml
+echo "spec:" >> Minio-svc.yml
+echo "  type: LoadBalancer" >> Minio-svc.yml
+echo "  ports:" >> Minio-svc.yml
+echo "    - name: http" >> Minio-svc.yml
+echo "      port: 9000" >> Minio-svc.yml
+echo "      targetPort: 9000" >> Minio-svc.yml
+echo "      protocol: TCP" >> Minio-svc.yml
+echo "  selector:" >> Minio-svc.yml
+echo "    # Looks for labels `app:minio` in the namespace and applies the spec" >> Minio-svc.yml
+echo "    app: minio" >> Minio-svc.yml
+
+kubectl create -f Minio-svc.yml
+
+kubectl get svc
+
+## Step 6 kann man überspringen
+
+# Step 6 – Access the MinIO Web UI
+
+# At this point, the MinIO service has been exposed on port 32278, proceed and access the web UI using the URL http://Node_IP:32278
+
+# Step 7 – Manage MinIO using MC client
+
+##For amd64
+wget https://dl.min.io/client/mc/release/linux-amd64/mc
+
+# Move the file to your path and make it executable:
+
+sudo cp mc /usr/local/bin/
+sudo chmod +x /usr/local/bin/mc
+
+#verify installation
+
+mc --version
+
+## hier kann man bis mc ls play minio alles überspringen
+
+# list all bukets
+
+mc ls play minio
+
+#You can list files in a bucket say test bucket with the command:
+
+mc ls play minio/test
+
+#Create a new bucket using the syntax:
+
+mc mb minio/<your-bucket-name>
+
+# for help use
+
+mc --help
+
+#how to copy things in and out
+
+https://docs.min.io/minio/baremetal/reference/minio-mc/mc-cp.html
+
+
 
 
 
