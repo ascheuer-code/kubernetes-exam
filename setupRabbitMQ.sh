@@ -24,10 +24,25 @@ kubectl get customresourcedefinitions.apiextensions.k8s.io
 
 touch rabbitmqcluster.yaml
 
-echo "apiVersion: v1" >> rabbitmqcluster.yaml
-echo "kind: ServiceAccount" >> rabbitmqcluster.yaml
+echo "apiVersion: rabbitmq.com/v1beta1" >> rabbitmqcluster.yaml
+echo "kind: RabbitmqCluster" >> rabbitmqcluster.yaml
 echo "metadata:" >> rabbitmqcluster.yaml
 echo "  name: rabbitmqcluster" >> rabbitmqcluster.yaml
+echo "spec:" >> rabbitmqcluster.yaml
+echo "  image: rabbitmq" >> rabbitmqcluster.yaml
+echo "  replicas: 1" >> rabbitmqcluster.yaml
+echo "  persistence:" >> rabbitmqcluster.yaml
+echo "    storage: 2Gi" >> rabbitmqcluster.yaml
+echo "  service:" >> rabbitmqcluster.yaml
+echo "    type: LoadBalancer" >> rabbitmqcluster.yaml
+echo "  resources:" >> rabbitmqcluster.yaml
+echo "    requests:" >> rabbitmqcluster.yaml
+echo "      cpu: 800m" >> rabbitmqcluster.yaml
+echo "      memory: 300Mi" >> rabbitmqcluster.yaml
+echo "    limits:" >> rabbitmqcluster.yaml
+echo "      cpu: 1000m" >> rabbitmqcluster.yaml
+echo "      memory: 500Mi" >> rabbitmqcluster.yaml
+  
 
 kubectl apply -f rabbitmqcluster.yaml
 
@@ -42,20 +57,6 @@ kubectl get all -l app.kubernetes.io/name=rabbitmqcluster
 
 # get now your preffered configuration from the page above or use this one
 
-echo "spec:" >> rabbitmqcluster.yaml
-echo "  image: rabbitmq" >> rabbitmqcluster.yaml
-echo "  replicas: 1" >> rabbitmqcluster.yaml
-echo "  persistence:" >> rabbitmqcluster.yaml
-echo "    storage: 2Gi" >> rabbitmqcluster.yaml
-echo "  service:" >> rabbitmqcluster.yaml
-echo "    type: LoadBalancer" >> rabbitmqcluster.yaml
-echo "  resources:" >> rabbitmqcluster.yaml
-echo "    requests:" >> rabbitmqcluster.yaml
-echo "      cpu: 800m" >> rabbitmqcluster.yaml
-echo "      memory: 300Mi" >> rabbitmqcluster.yaml
-echo "    limits:" >> rabbitmqcluster.yaml
-echo "      cpu: 1000m" >> rabbitmqcluster.yaml
-echo "      memory: 800Mi" >> rabbitmqcluster.yaml
 
 
 kubectl krew install rabbitmq #-> doesen work because if no krew installed
