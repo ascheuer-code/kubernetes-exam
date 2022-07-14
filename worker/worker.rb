@@ -22,24 +22,24 @@ class ImargardWorkingHard
   def initialize
 
 
-    @object_store_host = ENV[""] || "localhost"
-    @object_store_access_key_id     = ENV['OBJECT_STORE_ACCESS_KEY_ID'] || 'AKIAIOSFODNN7EXAMPLE'
-    @object_store_secret_access_key = ENV['OBJECT_STORE_SECRET_ACCESS_KEY'] || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
-    @object_store_region = ENV[]
-    @object_store_port = []
+    @object_store_host = ENV['MINIO_ENDPOINT'] || "localhost"
+    @object_store_access_key_id = ENV['MINIO_ID'] || 'AKIAIOSFODNN7EXAMPLE'
+    @object_store_secret_access_key = ENV['MINIO_KEY'] || 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
+    @object_store_region = ENV['MINIO_REGION'] || 'us-east-1'
+    @object_store_port = ['MINIO_PORT'] || '9000'
 
-    @object_recognition_provider = ENV[]
-    @object_recognition_infile =ENV[] ||"/tmp/object_recognition/original-image.jpg" 
-    @object_recognition_outfile = ENV[] "/tmp/object_recognition/filtered-image.jpg" 
-    @object_recognition_infile_name = ENV[] || 'infile'
-    @object_recognition_outfile_name = ENV[] || 'outfile'
-    @object_recognition_content_type = ENV[] || "image/jpeg"
+    @object_recognition_provider = ENV['WORKER_PROVIDER']
+    @object_recognition_infile =ENV['WORKER_INFILE'] ||"/tmp/object_recognition/original-image.jpg" 
+    @object_recognition_outfile = ENV['WORKER_OUTFILE'] "/tmp/object_recognition/filtered-image.jpg" 
+    @object_recognition_infile_name = ENV['WORKER_INFLILE_NAME'] || 'infile'
+    @object_recognition_outfile_name = ENV['WORKER_OUTFILE_NAME'] || 'outfile'
+    @object_recognition_content_type = ENV['WORKER_CCONTENT_TYPE'] || 'image/jpeg'
 
-    @rabbitmq_username = ENV[]
-    @rabbitmq_password = ENV[]
-    @rabbit_host = ENV["RABBITMQ_HOST"] || "localhost"
-    @rabbit_port = ENV[]
-    @rabbit_queue = ENV[]
+    @rabbitmq_username = ENV['RABBIT_USER']
+    @rabbitmq_password = ENV['RABBIT_PASSWORD']
+    @rabbit_host = ENV["RABBIT_HOST"] || "localhost"
+    @rabbit_port = ENV['RABBIT_PORT']
+    @rabbit_queue = ENV['RABBIT_QUEUE'] || 'images'
 
     @rabbit_con = Bunny.new("amqp://#{@rabbitmq_username}:#{@rabbitmq_password}@#{@rabbit_host}:#{@rabbit_port}") 
     @rabbit_con.start
