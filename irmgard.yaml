@@ -22,32 +22,15 @@ spec:
     spec:
       containers:
       - name: irmgard
-        image: irmgard:0.3.0
+        image: fischerjulian/irmgard:0.3.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 500m
+            memory: 500Mi
           limits:
-            cpu: 100m
-            memory: 100Mi
-        livenessProbe:
-          tcpSocket:
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /_status/healthz
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-          successThreshold: 1
-          failureThreshold: 3
-          periodSeconds: 10
+            cpu: 1000m
+            memory: 2Gi
         env:
         - name: POSTGRES_USERNAME
           valueFrom:
@@ -59,12 +42,7 @@ spec:
             configMapKeyRef:
               name: postgresql-config
               key: POSTGRES_HOST
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgresql-secrets
-              key: POSTGRES_PASSWORD
         ports:
-        - containerPort:  80
+        - containerPort:  8080
           name: irmgard
       restartPolicy: Always

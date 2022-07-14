@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: irmgard
+  labels:
+      app: irmgard
+spec:
+  selector:
+    matchLabels:
+      run: irmgard
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: irmgard
+    spec:
+      containers:
+      - name: irmgard-blue
+        image: irmgard:0.3.0
+        ports:
+            - containerPort: 8080

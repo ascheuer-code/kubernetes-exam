@@ -1,1 +1,3 @@
  kubectl get events --sort-by=.metadata.creationTimestamp
+
+ eval $(minikube docker-env)
