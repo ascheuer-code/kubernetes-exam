@@ -19,6 +19,7 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
   libtool \
   build-essential \
   git \
+  python3-pip \
   python3 python3-numpy python3-setuptools python3-pip\
   libopencv-dev opencv-data \
   ruby-dev \
@@ -34,6 +35,7 @@ COPY yolov3.cfg /workdir/yolov3.cfg
 COPY yolov3.txt  /workdir/yolov3.txt 
 COPY yolov3.weights /workdir/yolov3.weights
 
+RUN pip3 install --upgrade pip
 RUN pip3 install opencv-python
 
 # Provide an exemplary origina-file for, mainly for manual testing.
