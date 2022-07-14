@@ -33,12 +33,12 @@ class ImargardWorkingHard
     @object_recognition_outfile = ENV['WORKER_OUTFILE'] "/tmp/object_recognition/filtered-image.jpg" 
     @object_recognition_infile_name = ENV['WORKER_INFLILE_NAME'] || 'infile'
     @object_recognition_outfile_name = ENV['WORKER_OUTFILE_NAME'] || 'outfile'
-    @object_recognition_content_type = ENV['WORKER_CCONTENT_TYPE'] || 'image/jpeg'
+    @object_recognition_content_type = ENV['WORKER_CONTENT_TYPE'] || 'image/jpeg'
 
-    @rabbitmq_username = ENV['RABBIT_USER']
-    @rabbitmq_password = ENV['RABBIT_PASSWORD']
+    @rabbitmq_username = ENV['RABBIT_USER'] || 'guest'
+    @rabbitmq_password = ENV['RABBIT_PASSWORD'] || 'guest'
     @rabbit_host = ENV["RABBIT_HOST"] || "localhost"
-    @rabbit_port = ENV['RABBIT_PORT']
+    @rabbit_port = ENV['RABBIT_PORT'] || '5672'
     @rabbit_queue = ENV['RABBIT_QUEUE'] || 'images'
 
     @rabbit_con = Bunny.new("amqp://#{@rabbitmq_username}:#{@rabbitmq_password}@#{@rabbit_host}:#{@rabbit_port}") 
